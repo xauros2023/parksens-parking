@@ -1,0 +1,236 @@
+const ZONES = [
+  {
+    id: "attribution",
+    num: "01",
+    name: "Attribution & réservation",
+    short: "Comment une place est trouvée et confirmée",
+    map: "entrance",
+    items: [
+      "Attribution automatique d'une place selon la proximité du bâtiment indiqué dans l'agenda.",
+      "Réservation prioritaire pour les personnes à mobilité réduite, les visiteurs ou les véhicules de service.",
+      "Attribution automatique d'une place équipée d'une borne de recharge électrique selon le besoin réel (niveau de batterie déclaré).",
+      "Réservation groupée de plusieurs places pour les conférences, soutenances ou événements universitaires.",
+      "Proposition automatique d'un parking alternatif lorsque le parking principal est complet.",
+      "Réservation conditionnelle : la place n'est confirmée que si l'usager confirme sa présence avant l'événement, sinon elle repart en liste d'attente."
+    ]
+  },
+  {
+    id: "dynamique",
+    num: "02",
+    name: "Gestion dynamique des places",
+    short: "Ce qui se passe quand une place se libère ou est mal utilisée",
+    map: "core",
+    items: [
+      "Libération automatique de la place en cas de retard important ou d'absence constatée.",
+      "Réattribution immédiate d'une place libérée à l'usager suivant sur liste d'attente.",
+      "Détection des places occupées sans autorisation, avec attribution automatique d'une place de remplacement à l'usager concerné.",
+      "Annulation automatique de la réservation si l'événement devient une réunion à distance, grâce à une synchronisation avec l'agenda.",
+      "Historique d'usage et système d'évaluation de fiabilité : un usager qui annule souvent au dernier moment voit sa priorité de réservation réduite."
+    ]
+  },
+  {
+    id: "guidage",
+    num: "03",
+    name: "Détection & guidage",
+    short: "De l'arrivée du véhicule à la place exacte",
+    map: "path",
+    items: [
+      "Détection automatique de l'arrivée par géolocalisation, badge ou reconnaissance de plaque d'immatriculation.",
+      "Guidage en temps réel vers la place réservée.",
+      "Adaptation automatique de l'heure de réservation selon le trafic et le temps de trajet.",
+      "Itinéraire piéton accessible affiché automatiquement entre la place et le bâtiment, en tenant compte des ascenseurs et des rampes disponibles."
+    ]
+  },
+  {
+    id: "prevision",
+    num: "04",
+    name: "Prévision & optimisation",
+    short: "Anticiper la demande avant qu'elle n'arrive",
+    map: "core",
+    items: [
+      "Prévision des périodes de forte affluence à partir des emplois du temps et des événements institutionnels.",
+      "Priorisation du covoiturage pour réduire le nombre de places nécessaires, avec mise en relation des usagers selon la compatibilité de leurs horaires et de leur filière d'études.",
+      "Synchronisation avec le calendrier académique (cours, examens, soutenances) pour anticiper les pics d'affluence par filière ou par amphithéâtre.",
+      "Quotas de places différenciés selon le profil (étudiants, enseignants, personnel administratif, visiteurs), ajustés automatiquement selon la période."
+    ]
+  },
+  {
+    id: "communication",
+    num: "05",
+    name: "Communication",
+    short: "Tenir l'usager informé à chaque étape",
+    map: "entrance",
+    items: [
+      "Notification automatique en cas de réservation, modification, annulation ou changement de place."
+    ]
+  },
+  {
+    id: "visiteurs",
+    num: "06",
+    name: "Visiteurs & intervenants externes",
+    short: "Accueillir sans créer de compte permanent",
+    map: "entrance",
+    items: [
+      "Génération automatique d'un code d'accès temporaire pour les visiteurs (membre de jury, intervenant extérieur, parent d'étudiant) à partir d'une invitation.",
+      "Liaison avec les inscriptions aux colloques ou journées portes ouvertes pour anticiper les besoins en places.",
+      "Limitation de durée automatique pour les places visiteurs, avec notification avant l'expiration du créneau."
+    ]
+  },
+  {
+    id: "etudiants",
+    num: "07",
+    name: "Spécificités étudiantes",
+    short: "Des usages propres à la vie étudiante",
+    map: "core",
+    items: [
+      "Accès différencié selon le statut (étudiant à mobilité réduite, étudiant ayant un emploi avec horaires décalés).",
+      "Places de dépose rapide suggérées près des arrêts de bus ou de tramway, pour les usagers combinant transport en commun et voiture.",
+      "Système de covoiturage étudiant intégré à l'espace numérique de travail de l'université, organisé par filière ou par résidence."
+    ]
+  },
+  {
+    id: "securite",
+    num: "08",
+    name: "Sécurité & sûreté",
+    short: "Surveiller sans intrusion excessive",
+    map: "perimeter",
+    items: [
+      "Détection automatique d'intrusion ou de comportement suspect grâce à des caméras intelligentes.",
+      "Éclairage adaptatif s'allumant et s'éteignant selon la présence détectée.",
+      "Bouton d'urgence connecté ou détection de chute ou de malaise dans les zones piétonnes.",
+      "Verrouillage automatique de certaines zones en dehors des horaires d'ouverture de la faculté.",
+      "Alerte en cas de présence prolongée et suspecte d'un véhicule non identifié."
+    ]
+  },
+  {
+    id: "accessibilite",
+    num: "09",
+    name: "Accessibilité & confort",
+    short: "Penser le parking pour tous les usagers",
+    map: "path",
+    items: [
+      "Signalétique dynamique à affichage lumineux indiquant les places disponibles par étage ou par zone.",
+      "Assistance vocale pour guider les personnes malvoyantes.",
+      "Détection des véhicules mal stationnés empiétant sur deux places.",
+      "Places réservées dynamiquement en cas de situation médicale temporaire, sur validation du service de santé universitaire."
+    ]
+  },
+  {
+    id: "durabilite",
+    num: "10",
+    name: "Durabilité & énergie",
+    short: "Le parking comme infrastructure écologique",
+    map: "energy",
+    items: [
+      "Répartition intelligente de la puissance disponible entre les bornes de recharge électrique pour éviter la surcharge.",
+      "Toitures ou ombrières équipées de panneaux solaires, avec suivi de la production d'électricité.",
+      "Récupération des eaux de pluie grâce à des capteurs de niveau, pour l'arrosage des espaces verts attenants."
+    ]
+  },
+  {
+    id: "maintenance",
+    num: "11",
+    name: "Maintenance prédictive",
+    short: "Anticiper la panne avant qu'elle ne survienne",
+    map: "energy",
+    items: [
+      "Détection automatique des pannes (barrières, bornes de recharge, capteurs de place) avec création automatique d'un ticket de maintenance.",
+      "Suivi de l'usure des équipements pour anticiper leur remplacement avant la panne."
+    ]
+  },
+  {
+    id: "pilotage",
+    num: "12",
+    name: "Pilotage institutionnel",
+    short: "Donner à la faculté une vue d'ensemble",
+    map: "core",
+    items: [
+      "Tableau de bord croisant le taux d'occupation et l'affluence des différents bâtiments.",
+      "Statistiques rendues anonymes pour les rapports de responsabilité sociale et environnementale ou les plans de mobilité durable."
+    ]
+  },
+  {
+    id: "technologie",
+    num: "13",
+    name: "Intégration technologique avancée",
+    short: "Les fondations techniques du système",
+    map: "core",
+    items: [
+      "Simulation numérique du parking (jumeau numérique) permettant de tester l'impact d'un changement d'emploi du temps avant qu'il n'ait lieu.",
+      "Intelligence artificielle prédictive apprenant les habitudes individuelles pour affiner les attributions automatiques.",
+      "Interface de programmation ouverte permettant à des applications tierces (navigation, calendrier personnel, assistant vocal) d'interroger la disponibilité du parking.",
+      "Mode hors-ligne ou dégradé en cas de panne réseau, avec procédure de secours (badge physique, agent au sol)."
+    ]
+  },
+  {
+    id: "conformite",
+    num: "14",
+    name: "Conformité & protection des données",
+    short: "Respecter l'usager autant que la loi",
+    map: "perimeter",
+    items: [
+      "Anonymisation des données de géolocalisation et de plaque d'immatriculation, avec une durée de conservation limitée conforme au règlement général sur la protection des données.",
+      "Consentement explicite et révocable de l'usager pour l'utilisation de la géolocalisation ou de la reconnaissance de plaque.",
+      "Journal recensant les accès aux données pour les contrôles internes.",
+      "Droit à la récupération ou à l'effacement des données de stationnement sur demande de l'usager."
+    ]
+  },
+  {
+    id: "universite",
+    num: "15",
+    name: "Cas d'usage propres à l'université",
+    short: "Des situations qu'on ne trouve qu'sur un campus",
+    map: "entrance",
+    items: [
+      "Réservation automatique de places pour les navettes entre campus ou les bus d'examens externes.",
+      "Gestion des périodes de stage ou d'alternance, avec place temporaire attribuée selon les jours de présence.",
+      "Anticipation des flux liés à la bibliothèque universitaire ou au service de reprographie (par exemple lors de la restitution des mémoires).",
+      "Mode “événement exceptionnel” activable manuellement par l'administration (remise de diplômes, forum des métiers, élections étudiantes)."
+    ]
+  },
+  {
+    id: "arbitrage",
+    num: "16",
+    name: "Optimisation & arbitrage intelligent",
+    short: "Quand le système doit choisir entre deux usagers",
+    map: "core",
+    items: [
+      "Allocation globale des places optimisant l'ensemble des réservations de la journée, à la manière d'un marché.",
+      "Proposition automatique d'échange entre usagers en cas de conflit sur une même place.",
+      "Anticipation des besoins non réels : libération en avance des places réservées mais probablement inutilisées."
+    ]
+  },
+  {
+    id: "contexte",
+    num: "17",
+    name: "Anticipation contextuelle externe",
+    short: "Regarder au-delà des murs du campus",
+    map: "perimeter",
+    items: [
+      "Prise en compte des prévisions météorologiques pour anticiper une hausse de la demande.",
+      "Prise en compte des grèves de transport en commun ou des travaux routiers connus.",
+      "Détection d'un afflux de véhicules externes lié à un événement se déroulant hors du campus."
+    ]
+  },
+  {
+    id: "amelioration",
+    num: "18",
+    name: "Auto-amélioration du système",
+    short: "Un système qui apprend de ses propres erreurs",
+    map: "energy",
+    items: [
+      "Comparaison continue entre les prévisions et la réalité observée, avec ajustement automatique des modèles.",
+      "Détection d'anomalies de comportement global, par exemple un bâtiment sous-utilisé malgré un taux de réservation élevé."
+    ]
+  },
+  {
+    id: "social",
+    num: "19",
+    name: "Intelligence sociale & bien-être",
+    short: "Repérer l'urgence qu'on ne dit pas",
+    map: "path",
+    items: [
+      "Détection implicite d'une situation de stress ou d'urgence, comme une réservation tardive proche d'un examen, déclenchant une priorité automatique discrète."
+    ]
+  }
+];
