@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function SiteHeader() {
   return (
@@ -19,9 +20,11 @@ export default function SiteHeader() {
       <nav className="topbar__nav">
         <Link href="/#plan">Le plan</Link>
         <Link href="/#zones">Les 19 points</Link>
-        <Link href="/reserver" className="btn-reserve">
-          Réserver une place
-        </Link>
+        <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.95 }} style={{ display: "inline-block" }}>
+          <Link href="/reserver" className="btn-reserve">
+            Réserver une place
+          </Link>
+        </motion.div>
       </nav>
     </header>
   );

@@ -2,9 +2,26 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
+import { animate } from "animejs";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { STATUS_LABELS_FR } from "@/lib/statusLabels";
+
+function spawnRipple(buttonEl, clientX, clientY) {
+  const rect = buttonEl.getBoundingClientRect();
+  const ripple = document.createElement("span");
+  ripple.className = "spot-btn__ripple";
+  ripple.style.left = `${clientX - rect.left}px`;
+  ripple.style.top = `${clientY - rect.top}px`;
+  buttonEl.appendChild(ripple);
+  animate(ripple, {
+    scale: [0, 9],
+    opacity: [0.55, 0],
+    duration: 600,
+    ease: "outExpo",
+    onComplete: () => ripple.remove(),
+  });
+}
 
 const DURATIONS = [
   { value: 0.5, label: "30 minutes" },
@@ -151,7 +168,10 @@ export default function ReservePage() {
                         type="button"
                         disabled={disabled}
                         className={"spot-btn" + (selectedSpot === spot.id ? " is-selected" : "")}
-                        onClick={() => setSelectedSpot(spot.id)}
+                        onClick={(e) => {
+                          setSelectedSpot(spot.id);
+                          spawnRipple(e.currentTarget, e.clientX, e.clientY);
+                        }}
                         title={disabled ? "Place indisponible pour le moment" : "Sélectionner cette place"}
                       >
                         <span className="spot-btn__num">{spot.num}</span>

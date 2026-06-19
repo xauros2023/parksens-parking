@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import { AnimatePresence, motion } from "framer-motion";
 import { ZONES } from "@/lib/zones";
 
 if (typeof window !== "undefined") {
@@ -20,7 +21,6 @@ export default function ZonesExplorer({ activeMapKey, onMapKeyConsumed }) {
   const [openId, setOpenId] = useState(null);
   const [pulseIds, setPulseIds] = useState([]);
   const gridRef = useRef(null);
-  const detailRef = useRef(null);
   const lastFocusRef = useRef(null);
 
   const searchBlobs = useMemo(() => {
@@ -81,13 +81,15 @@ export default function ZonesExplorer({ activeMapKey, onMapKeyConsumed }) {
   }, [activeMapKey, onMapKeyConsumed]);
 
   useEffect(() => {
-    const detail = detailRef.current;
-    if (!detail) return;
     if (openId) {
-      detail.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else if (lastFocusRef.current) {
-      lastFocusRef.current.focus();
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      if (lastFocusRef.current) lastFocusRef.current.focus();
     }
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [openId]);
 
   useEffect(() => {
@@ -148,7 +150,7 @@ export default function ZonesExplorer({ activeMapKey, onMapKeyConsumed }) {
           {ZONES.map((zone) => {
             const hidden = visibleIds ? !visibleIds.includes(zone.id) : false;
             return (
-              <button
+              <motion.button
                 type="button"
                 key={zone.id}
                 className={
@@ -158,6 +160,9 @@ export default function ZonesExplorer({ activeMapKey, onMapKeyConsumed }) {
                 }
                 aria-label={`Voir le détail : ${zone.name}`}
                 onClick={(e) => openDetail(zone.id, e.currentTarget)}
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
                 <span className="zone-card__num">{zone.num}</span>
                 <span className="zone-card__name">{zone.name}</span>
@@ -165,7 +170,7 @@ export default function ZonesExplorer({ activeMapKey, onMapKeyConsumed }) {
                 <span className="zone-card__count">
                   {zone.items.length} fonctionnalité{zone.items.length > 1 ? "s" : ""}
                 </span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -174,10 +179,25 @@ export default function ZonesExplorer({ activeMapKey, onMapKeyConsumed }) {
         )}
       </section>
 
-      <section className="detail" id="detail" ref={detailRef}>
-        <div className={"detail__card" + (activeZone ? " is-open" : "")} style={{ display: activeZone ? "block" : "none" }}>
-          {activeZone && (
-            <>
+      <AnimatePresence>
+        {activeZone && (
+          <motion.div
+            className="detail-scrim"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeDetail();
+            }}
+          >
+            <motion.div
+              className="detail__card"
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 320, damping: 28 }}
+            >
               <button className="detail__close" aria-label="Fermer la fiche" onClick={closeDetail}>
                 retour
               </button>
@@ -189,10 +209,10 @@ export default function ZonesExplorer({ activeMapKey, onMapKeyConsumed }) {
                   <li key={i}>{item}</li>
                 ))}
               </ol>
-            </>
-          )}
-        </div>
-      </section>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <section className="printable" aria-hidden="true">
         <div className="printable__cover">

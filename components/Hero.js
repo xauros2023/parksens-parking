@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
+import { motion } from "framer-motion";
 
 export default function Hero() {
   const rootRef = useRef(null);
@@ -47,12 +48,16 @@ export default function Hero() {
           retrouver un usager avant même qu&apos;il n&apos;ait eu à la chercher.
         </p>
         <div className="hero__cta">
-          <Link href="/reserver" className="btn btn--primary">
-            Réserver une place
-          </Link>
-          <Link href="#zones" className="btn btn--ghost">
-            Voir les 19 points
-          </Link>
+          <motion.div whileHover={{ y: -2, scale: 1.02 }} whileTap={{ scale: 0.96 }}>
+            <Link href="/reserver" className="btn btn--primary">
+              Réserver une place
+            </Link>
+          </motion.div>
+          <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }}>
+            <Link href="#zones" className="btn btn--ghost">
+              Voir les 19 points
+            </Link>
+          </motion.div>
         </div>
         <div className="hero__stats">
           <div className="hero__stat">

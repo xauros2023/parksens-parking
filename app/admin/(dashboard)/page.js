@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { STATUS_LABELS_FR } from "@/lib/statusLabels";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 const SPOT_STATUSES = ["free", "occupied", "maintenance"];
 
@@ -21,6 +22,9 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [busyId, setBusyId] = useState(null);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetBusy, setResetBusy] = useState(false);
+  const [resetDone, setResetDone] = useState(false);
   const statRefs = useRef({});
 
   const load = useCallback(async () => {
@@ -93,6 +97,25 @@ export default function AdminDashboardPage() {
       if (res.ok) await load();
     } finally {
       setBusyId(null);
+    }
+  }
+
+  async function handleResetDatabase() {
+    setResetBusy(true);
+    try {
+      const res = await fetch("/api/admin/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm: "RESET" }),
+      });
+      if (res.ok) {
+        setResetOpen(false);
+        setResetDone(true);
+        setTimeout(() => setResetDone(false), 4000);
+        await load();
+      }
+    } finally {
+      setResetBusy(false);
     }
   }
 
@@ -238,6 +261,31 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </div>
+
+      <div className="admin-panel admin-panel--danger">
+        <h2 className="admin-panel__title">Zone dangereuse</h2>
+        <p className="admin-panel__desc">
+          Réinitialise entièrement la base de données du prototype : toutes les réservations sont supprimées
+          et les six places repassent à l&apos;état &laquo; libre &raquo;. Cette action est irréversible — à
+          utiliser uniquement pour repartir d&apos;une démonstration propre.
+        </p>
+        {resetDone && (
+          <div className="form-feedback form-feedback--ok">Base de données réinitialisée avec succès.</div>
+        )}
+        <button type="button" className="btn btn--danger-solid" onClick={() => setResetOpen(true)}>
+          Réinitialiser la base de données
+        </button>
+      </div>
+
+      <ConfirmDialog
+        open={resetOpen}
+        title="Réinitialiser la base de données ?"
+        description="Toutes les réservations (passées, en cours et à venir) seront définitivement supprimées et les six places repasseront à l'état libre. Cette action ne peut pas être annulée."
+        confirmLabel="Oui, tout réinitialiser"
+        busy={resetBusy}
+        onConfirm={handleResetDatabase}
+        onCancel={() => setResetOpen(false)}
+      />
     </>
   );
 }
