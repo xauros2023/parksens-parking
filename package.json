@@ -1,0 +1,19 @@
+{
+  "name": "parksens",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "node scripts/seed.mjs"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "next": "16.2.9",
+    "pg": "^8.12.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
