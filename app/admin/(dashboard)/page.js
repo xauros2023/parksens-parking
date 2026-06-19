@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { STATUS_LABELS_FR } from "@/lib/statusLabels";
 
 const SPOT_STATUSES = ["free", "occupied", "maintenance"];
 
@@ -139,7 +140,9 @@ export default function AdminDashboardPage() {
           {spots.map((spot) => (
             <div className="spot-control" key={spot.id}>
               <span className="spot-control__num">{spot.num}</span>
-              <span className={"badge badge--" + spot.effectiveStatus}>{spot.effectiveStatus}</span>
+              <span className={"badge badge--" + spot.effectiveStatus}>
+                {STATUS_LABELS_FR[spot.effectiveStatus]}
+              </span>
               <select
                 value={spot.status}
                 disabled={busyId === "spot-" + spot.id}
@@ -147,7 +150,7 @@ export default function AdminDashboardPage() {
               >
                 {SPOT_STATUSES.map((s) => (
                   <option key={s} value={s}>
-                    {s}
+                    {STATUS_LABELS_FR[s]}
                   </option>
                 ))}
               </select>
@@ -203,7 +206,7 @@ export default function AdminDashboardPage() {
                             : "badge--maintenance")
                         }
                       >
-                        {r.status}
+                        {STATUS_LABELS_FR[r.status]}
                       </span>
                     </td>
                     <td>

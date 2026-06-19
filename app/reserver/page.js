@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { STATUS_LABELS_FR } from "@/lib/statusLabels";
 
 const DURATIONS = [
   { value: 0.5, label: "30 minutes" },
@@ -154,7 +155,9 @@ export default function ReservePage() {
                         title={disabled ? "Place indisponible pour le moment" : "Sélectionner cette place"}
                       >
                         <span className="spot-btn__num">{spot.num}</span>
-                        <span className={"badge badge--" + spot.effectiveStatus}>{spot.effectiveStatus}</span>
+                        <span className={"badge badge--" + spot.effectiveStatus}>
+                          {STATUS_LABELS_FR[spot.effectiveStatus]}
+                        </span>
                       </button>
                     );
                   })}
